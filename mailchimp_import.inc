@@ -13,15 +13,18 @@ function mailchimp_import_admin_settings() {
   if ($mailchimp_api_key) {
 
     // Instantiate a MailChimp API object.
-    $q = mailchimp_get_api_object();
+    $q = mailchimp_get_api_object('MailchimpLists');
 
     // Get all lists in the configured MailChimp account.
-    $lists = $q->lists->getList(array(), 0, 100);
+    $lists = $q->getLists(array('count' => 500));
+
+    // convert json object to array to work with existing code
+    $list_array = json_decode(json_encode($lists),TRUE);
 
     // Build the options array.
     $options = array();
 
-    foreach ($lists['data'] as $list) {
+    foreach ($list_array['lists'] as $list) {
       $options[$list['id']] = $list['name'];
     }
 
